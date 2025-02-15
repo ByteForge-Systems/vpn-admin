@@ -26,6 +26,10 @@ SECRET_KEY = 'django-insecure-bn0v1xbac4(e2q9empb2=2l7-@sk5qb)%nse)q5xgf^c&h2%3#
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# пути редиректа
+LOGIN_REDIRECT_URL = '/admin/'
+LOGOUT_REDIRECT_URL = '/admin/login/'
+LOGIN_URL = '/admin/login/'
 
 
 # Application definition
