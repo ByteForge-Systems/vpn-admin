@@ -3,5 +3,5 @@ from django.shortcuts import render
 
 
 @login_required
-def admin_dashboard(request):
-    return render(request, 'admin_dashboard.html')
+def dashboard(request):
+    return render(request, 'admin_panel/dashboard.html')
