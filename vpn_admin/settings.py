@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'guest_page.apps.GuestPageConfig',
     'admin_panel.apps.AdminPanelConfig'
 ]
 
