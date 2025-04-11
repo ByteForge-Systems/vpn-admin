@@ -24,5 +24,5 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path("admin/", include("admin_panel.urls")),
-    path("", RedirectView.as_view(url='/admin/', permanent=True))
+    path("", RedirectView.as_view(url="/admin/login/", permanent=True))
 ]
