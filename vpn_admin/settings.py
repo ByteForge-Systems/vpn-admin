@@ -27,7 +27,7 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = []
 # пути редиректа
-LOGIN_REDIRECT_URL = '/admin/dashboard/'
+LOGIN_REDIRECT_URL = '/admin/'
 LOGOUT_REDIRECT_URL = '/admin/login/'
 LOGIN_URL = '/admin/login/'
 
