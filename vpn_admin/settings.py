@@ -27,9 +27,9 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = []
 # пути редиректа
-LOGIN_REDIRECT_URL = '/admin/dashboard/'
-LOGOUT_REDIRECT_URL = '/admin/'
-LOGIN_URL = '/admin/'
+LOGIN_REDIRECT_URL = '/admin/'
+LOGOUT_REDIRECT_URL = '/admin/login/'
+LOGIN_URL = '/admin/login/'
 
 
 
@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'guest_page.apps.GuestPageConfig',
     'admin_panel.apps.AdminPanelConfig'
 ]
 
