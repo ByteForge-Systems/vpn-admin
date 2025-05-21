@@ -6,5 +6,6 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('', views.dashboard, name='dashboard'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('servers/', views.servers, name='servers')
+    path('servers/', views.servers, name='servers'),
+    path('deploy/', views.deploy, name='deploy')
 ]

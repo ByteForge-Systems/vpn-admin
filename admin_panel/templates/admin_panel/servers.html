@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Untitled</title>
     <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&display=swap">
     <link rel="stylesheet" href="{% static 'assets/fonts/fontawesome-all.min.css' %}">
 </head>
 
@@ -51,6 +51,7 @@
                             <strong>IP:</strong> {{ node.ip }}<br>
                             <strong>ID:</strong> {{ node.id }}<br>
                         </p>
+                        <button class="btn btn-primary deploy-btn" data-node-ip="{{ node.ip }}">Deploy</button>
                     </div>
                 </div>
             </div>
@@ -64,6 +65,61 @@
     <script src="{% static 'assets/js/chart.min.js' %}"></script>
     <script src="{% static 'assets/js/bs-init.js' %}"></script>
     <script src="{% static 'assets/js/theme.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deployButtons = document.querySelectorAll('.deploy-btn');
+            deployButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const nodeIp = this.getAttribute('data-node-ip');
+                    const csrftoken = getCookie('csrftoken');
+
+                    button.disabled = true;
+                    button.innerHTML = 'Deploying...';
+
+                    fetch('{% url "deploy" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: JSON.stringify({ node_ip: nodeIp })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert('Deployment successful: ' + data.message);
+                        } else {
+                            alert('Deployment failed: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred during deployment.');
+                    })
+                    .finally(() => {
+                        // Восстанавливаем кнопку
+                        button.disabled = false;
+                        button.innerHTML = 'Deploy';
+                    });
+                });
+            });
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        });
+    </script>
 </body>
 
 </html>
