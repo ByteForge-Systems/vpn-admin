@@ -31,7 +31,7 @@ LOGIN_REDIRECT_URL = '/admin/'
 LOGOUT_REDIRECT_URL = '/admin/login/'
 LOGIN_URL = '/admin/login/'
 
-
+ADMIN_2FA_SECRET = os.getenv("ADMIN_2FA_SECRET", "default-secret-key")
 
 # Application definition
 
