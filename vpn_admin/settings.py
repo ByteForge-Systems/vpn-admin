@@ -120,6 +120,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+CSRF_COOKIE_SECURE = False
+CSRF_TRUSTED_ORIGINS = ['http://80.87.198.81:8001']
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
