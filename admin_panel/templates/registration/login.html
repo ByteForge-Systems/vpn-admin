@@ -6,7 +6,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>Login - Brand</title>
-
     <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
 </head>
@@ -26,19 +25,28 @@
                                     <div class="text-center">
                                         <h4 class="text-dark mb-4">Welcome Back!</h4>
                                     </div>
+                                    {% if error %}
+                                        <div class="alert alert-danger">{{ error }}</div>
+                                    {% endif %}
 
-                                    <!-- Классическая HTML-форма логина -->
                                     <form method="post" class="user" action="{% url 'login' %}">
                                         {% csrf_token %}
 
-                                        <div class="mb-3">
-                                            <input class="form-control form-control-user" type="text" name="username" placeholder="Enter Email Address..." required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <input class="form-control form-control-user" type="password" name="password" placeholder="Password" required>
-                                        </div>
+                                        {% if stage == "login" %}
+                                            <div class="mb-3">
+                                                <input class="form-control form-control-user" type="text" name="username" placeholder="Enter Email Address..." required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <input class="form-control form-control-user" type="password" name="password" placeholder="Password" required>
+                                            </div>
+                                            <button class="btn btn-primary d-block btn-user w-100" type="submit">Login</button>
+                                        {% elif stage == "2fa" %}
+                                            <div class="mb-3">
+                                                <input class="form-control form-control-user" type="text" name="2fa_code" placeholder="2FA code from app" maxlength="6" required autofocus>
+                                            </div>
+                                            <button class="btn btn-primary d-block btn-user w-100" type="submit">Verify 2FA</button>
+                                        {% endif %}
 
-                                        <button class="btn btn-primary d-block btn-user w-100" type="submit">Login</button>
                                         <hr>
                                     </form>
 

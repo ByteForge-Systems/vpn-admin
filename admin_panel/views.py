@@ -3,42 +3,58 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .forms import DeployForm
 from fabric import Connection
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import pyotp
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
-
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth import authenticate, login as auth_login, get_user_model
+import json
 import os
 
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None and user.is_staff:
-            request.session['pre_2fa_user'] = user.username
-            return redirect('admin_2fa')
-        else:
-            error = "Неверный логин или пароль"
-            return render(request, 'registration/login.html', {'error': error})
-    return render(request, 'registration/login.html')
 
-def admin_2fa_view(request):
-    if 'pre_2fa_user' not in request.session:
-        return redirect('login')
-    totp = pyotp.TOTP(settings.ADMIN_2FA_SECRET)
-    print(f"SECRET: {settings.ADMIN_2FA_SECRET}")
-    if request.method == 'POST':
-        code = request.POST.get('code')
-        if totp.verify(code):
-            user = authenticate(username=request.session['pre_2fa_user'])
-            auth_login(request, user)
-            del request.session['pre_2fa_user']
-            return redirect('/admin/servers')
+def login_view(request):
+    error = None
+    stage = "login"
+
+    if request.method == "POST":
+        if "2fa_code" in request.POST:
+            code = request.POST.get("2fa_code")
+            username = request.session.get("pre_2fa_user")
+            if not username:
+                error = "Сессия истекла, попробуйте войти заново."
+                stage = "login"
+            else:
+                totp = pyotp.TOTP(settings.ADMIN_2FA_SECRET)
+                if code and totp.verify(code):
+                    User = get_user_model()
+                    try:
+                        user = User.objects.get(username=username)
+                        auth_login(request, user)
+                        del request.session["pre_2fa_user"]
+                        return redirect("/admin/servers")
+                    except User.DoesNotExist:
+                        error = "Пользователь не найден."
+                        stage = "login"
+                else:
+                    error = "Неверный код."
+                    stage = "2fa"
         else:
-            return render(request, 'registration/admin_2fa.html', {'error': "Неверный код"})
-    return render(request, 'registration/admin_2fa.html')
+            username = request.POST.get("username")
+            password = request.POST.get("password")
+            user = authenticate(request, username=username, password=password)
+            if user is not None and user.is_staff:
+                request.session["pre_2fa_user"] = user.username
+                stage = "2fa"
+            else:
+                error = "Неверный логин или пароль."
+                stage = "login"
+
+    return render(request, "registration/login.html", {
+        "error": error,
+        "stage": stage,
+    })
 
 @login_required
 def dashboard(request):

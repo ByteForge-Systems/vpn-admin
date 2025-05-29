@@ -1,6 +1,0 @@
-<form method="post">
-  {% csrf_token %}
-  <label>Код из приложения: <input type="text" name="code"></label>
-  <button type="submit">Подтвердить</button>
-  {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
-</form>
