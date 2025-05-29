@@ -93,7 +93,7 @@ def deploy(request):
 
 @login_required
 def servers(request):
-    api_url = "http://46.254.17.174:8080/api/nodes"
+    api_url = "http://164.215.97.44:8080/api/nodes"
     try:
         response = requests.get(api_url)
         nodes = response.json()
