@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Login - Brand</title>
+    <title>2FA Verification - Brand</title>
     <link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i&amp;display=swap">
 </head>
@@ -23,21 +23,19 @@
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h4 class="text-dark mb-4">Welcome Back!</h4>
+                                        <h4 class="text-dark mb-4">Two-Factor Authentication</h4>
+                                        <p class="mb-4">Enter the 2FA code from your app</p>
                                     </div>
                                     {% if error %}
                                         <div class="alert alert-danger">{{ error }}</div>
                                     {% endif %}
 
-                                    <form method="post" class="user" action="{% url 'login' %}">
+                                    <form method="post" class="user" action="{% url 'two_factor' %}">
                                         {% csrf_token %}
                                         <div class="mb-3">
-                                            <input class="form-control form-control-user" type="text" name="username" placeholder="Enter Email Address..." required>
+                                            <input class="form-control form-control-user" type="text" name="2fa_code" placeholder="2FA code from app" maxlength="6" required autofocus>
                                         </div>
-                                        <div class="mb-3">
-                                            <input class="form-control form-control-user" type="password" name="password" placeholder="Password" required>
-                                        </div>
-                                        <button class="btn btn-primary d-block btn-user w-100" type="submit">Login</button>
+                                        <button class="btn btn-primary d-block btn-user w-100" type="submit">Verify 2FA</button>
                                         <hr>
                                     </form>
 

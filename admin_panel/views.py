@@ -17,49 +17,43 @@ import os
 
 def login_view(request):
     error = None
-    stage = "login"
-
     if request.method == "POST":
-        if "2fa_code" in request.POST:
-            code = request.POST.get("2fa_code")
-            username = request.session.get("pre_2fa_user")
-            if not username:
-                error = "Сессия истекла, попробуйте войти заново."
-                stage = "login"
-            else:
-                totp = pyotp.TOTP(settings.ADMIN_2FA_SECRET)
-                if code and totp.verify(code):
-                    User = get_user_model()
-                    try:
-                        user = User.objects.get(username=username)
-                        auth_login(request, user)
-                        del request.session["pre_2fa_user"]
-                        ip = request.META.get("REMOTE_ADDR")
-                        send_telegram_notification(
-                        f"🛡️ Админ <b>{user.username}</b> вошёл в админку.\nIP: <code>{ip}</code>"
-                        )
-                        return redirect("/admin/servers")
-                    except User.DoesNotExist:
-                        error = "Пользователь не найден."
-                        stage = "login"
-                else:
-                    error = "Неверный код."
-                    stage = "2fa"
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None and user.is_staff:
+            request.session["pre_2fa_user"] = user.username
+            return redirect("two_factor")
         else:
-            username = request.POST.get("username")
-            password = request.POST.get("password")
-            user = authenticate(request, username=username, password=password)
-            if user is not None and user.is_staff:
-                request.session["pre_2fa_user"] = user.username
-                stage = "2fa"
-            else:
-                error = "Неверный логин или пароль."
-                stage = "login"
+            error = "Неверный логин или пароль."
+    return render(request, "registration/login.html", {"error": error})
 
-    return render(request, "registration/login.html", {
-        "error": error,
-        "stage": stage,
-    })
+def two_factor_view(request):
+    error = None
+    if request.method == "POST":
+        code = request.POST.get("2fa_code")
+        username = request.session.get("pre_2fa_user")
+        if not username:
+            error = "Сессия истекла, попробуйте войти заново."
+            return redirect("login")
+        totp = pyotp.TOTP(settings.ADMIN_2FA_SECRET)
+        if code and totp.verify(code):
+            User = get_user_model()
+            try:
+                user = User.objects.get(username=username)
+                auth_login(request, user)
+                del request.session["pre_2fa_user"]
+                ip = request.META.get("REMOTE_ADDR")
+                send_telegram_notification(
+                    f"🛡️ Админ <b>{user.username}</b> вошёл в админку.\nIP: <code>{ip}</code>"
+                )
+                return redirect("/admin/servers")
+            except User.DoesNotExist:
+                error = "Пользователь не найден."
+                return redirect("login")
+        else:
+            error = "Неверный код."
+    return render(request, "registration/two_factor.html", {"error": error})
 
 @login_required
 def dashboard(request):
@@ -96,6 +90,7 @@ def deploy(request):
 # TODO: сделать кнопку включения
 # TODO: отредактировать дополнительную информацию на кнопке
 # TODO: ?добавить страничку ноды?
+
 @login_required
 def servers(request):
     api_url = "http://46.254.17.174:8080/api/nodes"
