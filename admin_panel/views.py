@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login as auth_login, get_user_model
+from .telegram_notify import send_telegram_notification
 import json
 import os
 
@@ -33,6 +34,10 @@ def login_view(request):
                         user = User.objects.get(username=username)
                         auth_login(request, user)
                         del request.session["pre_2fa_user"]
+                        ip = request.META.get("REMOTE_ADDR")
+                        send_telegram_notification(
+                        f"🛡️ Админ <b>{user.username}</b> вошёл в админку.\nIP: <code>{ip}</code>"
+                        )
                         return redirect("/admin/servers")
                     except User.DoesNotExist:
                         error = "Пользователь не найден."

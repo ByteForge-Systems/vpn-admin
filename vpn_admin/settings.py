@@ -33,6 +33,9 @@ LOGIN_URL = '/admin/login/'
 
 ADMIN_2FA_SECRET = os.getenv("ADMIN_2FA_SECRET", "default-secret-key")
 
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_ADMIN_CHAT_ID = os.getenv("TELEGRAM_ADMIN_CHAT_ID")
+
 # Application definition
 
 INSTALLED_APPS = [
