@@ -35,31 +35,33 @@
             <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
         </div>
     </nav>
-    <div class="row">
-            {% for node in nodes %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">{{ node.name|default:"Unnamed Node" }}</h4>
-                        <h6 class="text-muted card-subtitle mb-2">
-                            Status:
-                            <span class="badge {% if node.status == 'active' %}bg-success{% else %}bg-danger{% endif %}">
-                                {{ node.status|default:"unknown" }}
-                            </span>
-                        </h6>
-                        <p class="card-text">
-                            <strong>IP:</strong> {{ node.ip }}<br>
-                            <strong>ID:</strong> {{ node.id }}<br>
-                        </p>
-                        <button class="btn btn-primary deploy-btn" data-node-ip="{{ node.ip }}">Deploy</button>
-                    </div>
+    <div class="row flex-fill">
+        {% for node in nodes %}
+        <div class="col-md-2 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h4 class="card-title">Node {{ node.id }}</h4>
+                    <h6 class="text-muted card-subtitle mb-2">
+                        Status:
+                        <span class="badge {% if node.is_online %}bg-success{% else %}bg-danger{% endif %}">
+                                {% if node.is_online %}On{% else %}Off{% endif %}
+                        </span>
+                    </h6>
+                    <p class="card-text">
+                        <strong>IP:</strong> {{ node.ip }}<br>
+                        <strong>ID:</strong> {{ node.id }}<br>
+                        <strong>Country:</strong> {{ node.country }}<br>
+                        <strong>Port:</strong> {{ node.port }}<br>
+                    </p>
+                    <button class="btn btn-primary deploy-btn" data-node-ip="{{ node.ip }}">Deploy</button>
                 </div>
             </div>
-            {% empty %}
-            <div class="col-12">
-                <div class="alert alert-warning">No nodes available.</div>
-            </div>
-            {% endfor %}
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-warning">No nodes available.</div>
+        </div>
+        {% endfor %}
     </div>
     <script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'assets/js/chart.min.js' %}"></script>
